@@ -1,0 +1,38 @@
+import { useEffect, useState } from "react";
+import { UserService } from "../../services/userService";
+import Sidebar from "./components/Sidebar";
+import { toast } from "react-toastify";
+import Page404 from '../../pages/pageError/Page404';
+
+const DefaultLayoutAdmin = ({
+    children
+}: {
+    children: React.ReactNode;
+}) => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    const getUser = async () => {
+        try {
+            const res = await UserService.getUser();
+            setIsAdmin(res.data.data.role === 1 ? true : false);
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message);
+        }
+    }
+    useEffect(() => {
+        getUser();
+    }, [])
+
+    if (!isAdmin) {
+        return <Page404 />
+    }
+
+    return <div className="w-full flex min-h-screen gap-2">
+        <div>
+            <Sidebar />
+        </div>
+        <div className="flex-1">
+            {children}
+        </div>
+    </div>
+}
+export default DefaultLayoutAdmin;
