@@ -9,6 +9,9 @@ export const AuthService = {
   login: (data:LoginForm) => {
     return http.post("auth/login", data);
   },
+  loginPlayer: (data:LoginForm) => {
+    return http.post("auth/login-player", data);
+  },
   logout: () => {
     httpInstance.removeBearerToken();
     localStorage.removeItem('accessToken');

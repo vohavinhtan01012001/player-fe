@@ -1,11 +1,11 @@
 import { BookUser, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlayerService } from "../../../services/playerService";
 import Table, { Column } from "../../../components/Table";
 import ConfirmDelete from "../../../components/ConfirmDelete";
 import PlayerForm from "./components/PlayerForm";
-import SwitchStatus from "../../../components/SwitchStatus";
-import { toast } from "react-toastify";
+import { Tabs } from "antd";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export type PlayerType = {
     id: number;
@@ -16,7 +16,9 @@ export type PlayerType = {
     images: string[];
     description: string;
     achievements: any[];
-    status:number;
+    status: number;
+    gender: string;
+    price: number;
 };
 
 const Player = () => {
@@ -24,20 +26,24 @@ const Player = () => {
     const [players, setPlayers] = useState<PlayerType[]>([]);
     const [player, setPlayer] = useState<PlayerType | null>(null);
     const [isOpenConfirm, setIsOpenConfirm] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams();
+    const status = searchParams.get('status');
+    const active = searchParams.get('active');
 
-
-    useEffect(() => {
-        getPlayerList();
-    }, []);
-
-    const getPlayerList = async () => {
+    const getPlayerList = useCallback(async () => {
         try {
             const res = await PlayerService.getPlayers();
-            setPlayers(res.data.data);
+            setPlayers(status && parseInt(status, 10) !== 0 ? res.data.data.filter((player: any) => player.status === parseInt(status, 10)) : res.data.data);
         } catch (error: any) {
             console.log(error);
         }
-    };
+    }, [status])
+
+    useEffect(() => {
+        getPlayerList();
+    }, [getPlayerList]);
 
     const handleActions = (action: string, player: any) => {
         switch (action) {
@@ -72,18 +78,23 @@ const Player = () => {
         }
     };
 
-    const handleUpdateStatus = async (checked: boolean, row: any) => {
-        try {
-            const valueCheck = checked ? 1 : 0;
-            const res = await PlayerService.updatePlayer(row.id, {
-                status: valueCheck,
-            });
-            toast.success(res.data.msg);
-            getPlayerList();
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message);
-        }
-    };
+    const handleStatusChange = (value: string) => {
+        navigate(`/admin/players?status=${value}`);
+        setCurrentPage(1);
+    }
+
+    // const handleUpdateStatus = async (checked: boolean, row: any) => {
+    //     try {
+    //         const valueCheck = checked ? 1 : 0;
+    //         const res = await PlayerService.updatePlayer(row.id, {
+    //             status: valueCheck,
+    //         });
+    //         toast.success(res.data.msg);
+    //         getPlayerList();
+    //     } catch (error: any) {
+    //         toast.error(error?.response?.data?.message);
+    //     }
+    // };
 
     const columns: Column[] = [
         {
@@ -102,7 +113,10 @@ const Player = () => {
             field: 'status',
             headerName: 'Status',
             render: (row) => {
-                return <SwitchStatus row={row} handleUpdate={handleUpdateStatus} />
+                const status = items?.find((item: any) => parseInt(item.key, 10) === row.status)
+                return <div className={` text-white w-[130px] text-center rounded-full py-[2px]`} style={{ background: status?.color }}>
+                    {status?.label}
+                </div>
             }
         },
         {
@@ -114,12 +128,74 @@ const Player = () => {
                         <button className="w-10 h-10" onClick={() => handleActions('detail', row)}>
                             <BookUser size={20} className="mx-auto" />
                         </button>
-                        <button className="pb-[2px] w-10 h-10" onClick={() => handleActions('delete', row)}>
-                            <Trash2 size={20} className="mx-auto" />
-                        </button>
+                        {
+                            status === '4' ? '' : <button className="pb-[2px] w-10 h-10" onClick={() => handleActions('delete', row)}>
+                                <Trash2 size={20} className="mx-auto" />
+                            </button>
+                        }
                     </div>
                 );
             },
+        },
+    ];
+
+    const columnCancel = [
+        {
+            field: 'id',
+            headerName: 'Id',
+        },
+        {
+            field: 'name',
+            headerName: 'Name',
+        },
+        {
+            field: 'email',
+            headerName: 'Email',
+        },
+        {
+            field: 'status',
+            headerName: 'Status',
+            render: (row: any) => {
+                const status = items?.find((item: any) => parseInt(item.key, 10) === row.status)
+                return <div className={` text-white w-[130px] text-center rounded-full py-[2px]`} style={{ background: status?.color }}>
+                    {status?.label}
+                </div>
+            }
+        },
+    ]
+
+
+
+
+    const items: any = [
+        {
+            key: '0',
+            label: 'All',
+        },
+        {
+            key: '1',
+            label: 'Active',
+            color: "green",
+        },
+        {
+            key: '2',
+            label: 'Not active',
+            color: "gray",
+        },
+        {
+            key: '3',
+            label: 'Busy',
+            color: "red",
+        },
+        {
+            key: '4',
+            label: 'Pending approval',
+            color: "#9f9f25",
+        },
+        {
+            key: '5',
+            label: 'Not approved',
+            color: "#4d0101",
         },
     ];
 
@@ -134,7 +210,20 @@ const Player = () => {
                 </button>
             </div>
             <div className="w-full ">
-                <Table columns={columns} data={players} />
+                <Tabs
+                    defaultActiveKey={status ?? '0'}
+                    items={items}
+                    onChange={(value) => handleStatusChange(value)}
+                />
+            </div>
+            <div className="w-full ">
+                <Table
+                    columns={status === '5' ? columnCancel : columns}
+                    data={players}
+                    active={active ? parseInt(active, 10) : undefined}
+                    setCurrentPage={setCurrentPage}
+                    currentPage={currentPage}
+                />
             </div>
             <ConfirmDelete
                 open={isOpenConfirm}
@@ -148,6 +237,7 @@ const Player = () => {
                 getPlayerList={getPlayerList}
                 player={player}
                 setPlayer={setPlayer}
+                approval={player?.status === 4 ? true : false}
             />
         </div>
     );

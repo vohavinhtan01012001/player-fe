@@ -17,6 +17,7 @@ const Game = () => {
     const [games, setGames] = useState<GameType[]>([])
     const [game, setGame] = useState<GameType | null>(null);
     const [isOpenConfirm, setIsOpenConfirm] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     useEffect(() => {
         getGameList();
     }, [])
@@ -56,7 +57,7 @@ const Game = () => {
             try {
                 await GameService.deleteGame(game.id);
                 setIsOpenConfirm(false);
-                getGameList(); 
+                getGameList();
                 handleCloseDelete();
             } catch (error: any) {
                 console.log(error);
@@ -116,7 +117,8 @@ const Game = () => {
                 </button>
             </div>
             <div className="w-full ">
-                <Table columns={columns} data={games} />
+                <Table columns={columns} data={games} setCurrentPage={setCurrentPage}
+                    currentPage={currentPage} />
             </div>
             <GameForm
                 open={isOpenForm}
@@ -125,7 +127,7 @@ const Game = () => {
                 setGame={setGame}
                 getGameList={getGameList}
             />
-          <ConfirmDelete
+            <ConfirmDelete
                 open={isOpenConfirm}
                 handleClose={handleCloseDelete}
                 onDelete={handleDelete}

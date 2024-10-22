@@ -27,14 +27,19 @@ function Login() {
     try {
       const res = await AuthService.login(data)
       if (res.data.accessToken) {
-        toast.success(res.data.msg)
-        localStorage.setItem('accessToken', res.data.accessToken)
-        if (res.data.data.role === 1) {
-          navigate('/admin/users')
+        if (res.data.data.status != 0) {
+          toast.success(res.data.msg)
+          localStorage.setItem('accessToken', res.data.accessToken)
+          if (res.data.data.role === 1) {
+            navigate('/admin/users')
+          }
+          else {
+            navigate('/')
+          }
           window.location.reload()
         }
-        else{
-          navigate('/')
+        else {
+          toast.error("Account has been locked")
         }
       }
     } catch (error: any) {
@@ -44,6 +49,14 @@ function Login() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {/* <div className='flex items-center -mt-8 mb-11 cursor-pointer shadow overflow-hidden rounded-lg'>
+        <div onClick={() => setCheckPlayer(false)} className={`duration-300 w-[100px] ${checkPlayer ? "bg-[#9e8f8c33]" : "bg-[#ff4b2b] text-white"} py-2 `}>
+          User
+        </div>
+        <div onClick={() => setCheckPlayer(true)} className={`duration-300  w-[100px] ${checkPlayer ? "bg-[#ff4b2b] text-white" : "bg-[#bebab933] text-[#333]"}   font-semibold py-2 `}>
+          Player
+        </div>
+      </div> */}
       <Label className='text-base' required>Email</Label>
       <Input
         type='email'

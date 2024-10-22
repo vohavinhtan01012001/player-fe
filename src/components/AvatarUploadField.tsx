@@ -4,10 +4,11 @@ import { useRef } from "react";
 interface AvatarUploadFieldProps {
     setImage: React.Dispatch<React.SetStateAction<any | undefined>>;
     image?: any;
-    hiddenEdit: boolean;
+    hiddenEdit?: boolean;
+    className?: string;
 }
 
-const AvatarUploadField: React.FC<AvatarUploadFieldProps> = ({ setImage, image, hiddenEdit }) => {
+const AvatarUploadField: React.FC<AvatarUploadFieldProps> = ({ className = "", setImage, image, hiddenEdit = false }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +30,7 @@ const AvatarUploadField: React.FC<AvatarUploadFieldProps> = ({ setImage, image, 
     };
 
     return (
-        <div className="relative w-36 h-36 rounded-full bg-slate-100 cursor-pointer overflow-hidden">
+        <div className={`relative w-36 h-36 rounded-full bg-slate-100 cursor-pointer overflow-hidden ${className}`}>
             <input
                 ref={fileInputRef}
                 type="file"

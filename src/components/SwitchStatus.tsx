@@ -15,8 +15,8 @@ const SwitchStatus = ({ row, handleUpdate }: { row: any, handleUpdate: (checked:
     }
 
     return (
-        <div>
-            <Switch checked={status === 1} onChange={handleUpdateStatus} />
+        <div className="relative">
+            <Switch className="z-0" checked={status === 1} onChange={handleUpdateStatus} />
         </div>
     );
 };

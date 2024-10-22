@@ -5,6 +5,7 @@ import Table, { Column } from "../../../components/Table";
 import SwitchStatus from "../../../components/SwitchStatus";
 const User = () => {
     const [users, setUsers] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
     const getUsers = async () => {
         try {
             const res = await UserService.getAllUser();
@@ -54,7 +55,8 @@ const User = () => {
     return (
         <div className="px-6 pt-36 flex items-start justify-center h-full">
             <div className="w-[1500px]">
-                <Table columns={columns} data={users} />
+                <Table columns={columns} data={users}  setCurrentPage={setCurrentPage}
+                    currentPage={currentPage} />
             </div>
         </div>
     )

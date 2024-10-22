@@ -16,20 +16,7 @@ const Collection = () => {
     const [activeStatus, setActiveStatus] = useState(false);
     const [playerName, setPlayerName] = useState('');
 
-    const Gender = [
-        {
-            label: "Giới tính",
-            value: 0
-        },
-        {
-            label: "Nam",
-            value: 1
-        },
-        {
-            label: "Nữ",
-            value: 2
-        }
-    ]
+
 
     useEffect(() => {
         getPlayerList();
@@ -41,7 +28,7 @@ const Collection = () => {
             if (id) {
                 idValue = parseInt(id, 10);
             }
-            const res = await PlayerService.getPlayers(idValue);
+            const res = await PlayerService.getPlayersClient(idValue);
             setPlayers(res.data.data);
             setPlayersFilter(res.data.data)
         } catch (error: any) {
@@ -77,20 +64,6 @@ const Collection = () => {
         <div className="vip-section p-6 mx-20 ">
             <div className="flex items-center my-4">
                 <form className="flex items-center gap-4" onSubmit={handleFilter}>
-                    <Select
-                        defaultValue={0}
-                        className="w-[120px] rounded-lg"
-                        value={selectedGender}
-                        onChange={setSelectedGender}
-                    >
-                        {
-                            Gender.map((gender) => {
-                                return (
-                                    <Option value={gender.value}>{gender.label}</Option>
-                                )
-                            })
-                        }
-                    </Select>
                     <ButtonActive active={activeStatus} onClick={() => setActiveStatus(!activeStatus)}>
                         Sẵn sàng
                     </ButtonActive>

@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Pagination from './Pagination';
 
 export interface Column {
     field: string;
     headerName: React.ReactNode;
-    render?: (row: Record<string, any>) => React.ReactNode; 
+    render?: (row: Record<string, any>) => React.ReactNode;
 }
 
 interface TableProps {
     columns: Column[];
     data: Record<string, any>[];
     rowsPerPage?: number;
+    active?: number;
+    currentPage: number;
+    setCurrentPage: (page: number) => void;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data, rowsPerPage = 5 }) => {
-    const [currentPage, setCurrentPage] = useState(1);
+const Table: React.FC<TableProps> = ({ columns, data, rowsPerPage = 5, active, currentPage, setCurrentPage }) => {
 
     // Tính toán tổng số trang
     const totalPages = Math.ceil(data.length / rowsPerPage);
@@ -42,10 +44,10 @@ const Table: React.FC<TableProps> = ({ columns, data, rowsPerPage = 5 }) => {
                     </thead>
                     <tbody>
                         {currentData.map((row, rowIndex) => (
-                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+                            <tr key={rowIndex} className={active === row.id ? 'bg-blue-300' : rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                                 {columns.map((col) => (
                                     <td key={col.field} className="border-gray-100 px-4 py-3">
-                                        {col.render ? col.render(row) : row[col.field]} 
+                                        {col.render ? col.render(row) : row[col.field]}
                                     </td>
                                 ))}
                             </tr>
