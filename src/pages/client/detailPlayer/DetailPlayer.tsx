@@ -3,6 +3,7 @@ import { PlayerService } from "../../../services/playerService";
 import { useEffect, useState } from "react";
 import { PlayerType } from "../../admin/player/Player";
 import RentForm from "./components/RentForm";
+import dayjs from "dayjs";
 
 const DetailPlayer = () => {
     const { id } = useParams();
@@ -48,7 +49,7 @@ const DetailPlayer = () => {
                                 :
                                 <p className="text-xl text-green-600 font-semibold text-center">Đang sẵn sàng</p>
                         }
-                        <p className="font-semibold text-sm py-2 text-center"><span className="text-slate-500">Ngày tham gia</span>: 26/10/2018</p>
+                        <p className="font-semibold text-sm py-2 text-center"><span className="text-slate-500">Ngày tham gia</span>: {dayjs(player?.created_at).format('DD/MM/YYYY')}</p>
                     </div>
                 </div>
                 <div className="">

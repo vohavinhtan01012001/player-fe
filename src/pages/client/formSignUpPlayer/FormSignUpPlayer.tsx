@@ -72,7 +72,7 @@ const FormSignUpPlayer = () => {
         price: yup.number().min(0, 'Price must be a positive number').required('Price is required'),
     });
     const { register, setValue, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
-        resolver: yupResolver(validationSchema),
+        resolver: yupResolver(validationSchema as any),
     });
 
     useEffect(() => {
@@ -142,10 +142,6 @@ const FormSignUpPlayer = () => {
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         try {
-            // if (!data.email || data.email.trim() === '') {
-            //     toast.error('Email không được để trống');
-            //     return; 
-            // }
             setLoading(true);
             let playerData;
             if (user && user.id) {

@@ -15,5 +15,6 @@ export const AuthService = {
   logout: () => {
     httpInstance.removeBearerToken();
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('isPlayer');
   }
 }

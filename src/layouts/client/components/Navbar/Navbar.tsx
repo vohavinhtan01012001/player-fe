@@ -69,13 +69,13 @@ const Navbar: React.FC = () => {
                     <Link to="/Policy">Policy</Link>
                 </li>
                 {
-                    !localStorage.getItem("player") &&
+                    localStorage.getItem("isPlayer") === 'false' || !localStorage.getItem("isPlayer") &&
                     <li className='hover:text-[#f0564a] duration-300'>
                         <Link to="/sign-up-player">Sign up as a player</Link>
                     </li>
                 }
                 {
-                    localStorage.getItem("player") &&
+                    localStorage.getItem("isPlayer") === "true" &&
                     <li className='hover:text-[#f0564a] duration-300'>
                         <Link to="/rental-request-list">Rental request list</Link>
                     </li>

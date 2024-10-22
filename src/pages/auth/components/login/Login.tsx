@@ -6,6 +6,7 @@ import Label from "../../../../components/Label";
 import { toast } from 'react-toastify';
 import { AuthService } from '../../../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
+import { PlayerService } from '../../../../services/playerService';
 
 export type LoginForm = {
   email: string;
@@ -28,7 +29,11 @@ function Login() {
       const res = await AuthService.login(data)
       if (res.data.accessToken) {
         if (res.data.data.status != 0) {
-          toast.success(res.data.msg)
+          const players = await PlayerService.getPlayers();
+          const user = res.data.data;
+          const checkPlayer = players.data.data.find((item: any) => item.userId === user.id);
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          checkPlayer ? localStorage.setItem("isPlayer", "true") : localStorage.setItem("isPlayer", "false");
           localStorage.setItem('accessToken', res.data.accessToken)
           if (res.data.data.role === 1) {
             navigate('/admin/users')
@@ -37,6 +42,7 @@ function Login() {
             navigate('/')
           }
           window.location.reload()
+          toast.success(res.data.msg)
         }
         else {
           toast.error("Account has been locked")
