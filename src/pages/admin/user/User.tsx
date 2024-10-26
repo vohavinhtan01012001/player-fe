@@ -53,11 +53,9 @@ const User = () => {
     }, [])
 
     return (
-        <div className="px-6 pt-36 flex items-start justify-center h-full">
-            <div className="w-[1500px]">
-                <Table columns={columns} data={users}  setCurrentPage={setCurrentPage}
-                    currentPage={currentPage} />
-            </div>
+        <div className="max-w-[1500px] px-6 pt-52 flex flex-col mx-auto gap-4 h-full">
+            <Table columns={columns} data={users} setCurrentPage={setCurrentPage}
+                currentPage={currentPage} />
         </div>
     )
 }

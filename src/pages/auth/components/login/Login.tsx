@@ -5,7 +5,7 @@ import Input from "../../../../components/Input";
 import Label from "../../../../components/Label";
 import { toast } from 'react-toastify';
 import { AuthService } from '../../../../services/AuthService';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PlayerService } from '../../../../services/playerService';
 
 export type LoginForm = {
@@ -77,6 +77,7 @@ function Login() {
       />
 
       <button type='submit'>Sign In</button>
+      <Link to={'/forgot-password'} className='text-sm hover:text-red-600'>Forgot Password?</Link>
     </form>
   );
 }

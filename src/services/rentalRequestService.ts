@@ -8,13 +8,15 @@ export const RentalRequestService = {
   getRentalRequestByIdPlayer: (id:number) => {
     return http.get(`rental-request/player/${id}`);
   },
-  
+  getRentalRequestByIdPlayerAll: (id:number) => {
+    return http.get(`rental-request/player-all/${id}`);
+  },
 
   createRentalRequest: (data: any) => {
     return http.post("rental-request/add-rental-request", data);
   },
   
-  updateRentalRequest: (id: number, data: { status?: string; note?: string }) => {
+  updateRentalRequest: (id: number, data: { status?: number; note?: string }) => {
     return http.put(`rental-request/update-rental-request/${id}`, data);
   },
   

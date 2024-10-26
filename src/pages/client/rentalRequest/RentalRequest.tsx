@@ -5,10 +5,14 @@ import { UserService } from '../../../services/userService';
 import { toast } from 'react-toastify';
 import { PlayerService } from '../../../services/playerService';
 import { Send, X } from 'lucide-react';
+import ChatWindow from './components/ChatWindow';
 
 const RentalRequestList = () => {
     const [rentalRequestList, setRentalRequestList] = useState<any[]>([]);
     const [player, setPlayer] = useState<any>(null);
+    const [showChat, setShowChat] = useState(false)
+    const [user, setUser] = useState()
+    const [rental, setRental] = useState()
 
     const getPlayer = async () => {
         try {
@@ -24,7 +28,23 @@ const RentalRequestList = () => {
 
     useEffect(() => {
         getPlayer();
-    }, []);
+    }, [showChat]);
+
+
+    const getUserChat = async () => {
+        try {
+            const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
+            setUser(res.data.data.find(p => p.status === 1).User)
+            setShowChat(true);
+            setRental(res.data.data.find(p => p.status === 1))
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getUserChat()
+    },[showChat])
 
     useEffect(() => {
         if (player) {
@@ -32,6 +52,7 @@ const RentalRequestList = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [player]);
+
 
     const getRentalRequestList = async () => {
         try {
@@ -52,6 +73,28 @@ const RentalRequestList = () => {
         }
     }
 
+    const handleSubmit = async (id: number, user: any) => {
+        try {
+            const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
+            if (res.data.data.some(p => p.status === 1)) {
+                toast.error("You have confirmed a previous request")
+                return;
+            }
+            await RentalRequestService.updateRentalRequest(id, { status: 1 })
+            toast.success("Rental confirmation successfully")
+            setShowChat(true);
+            setUser(user);
+            getRentalRequestList();
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message);
+        }
+    }
+
+    const handleCloseChat = () => {
+        setShowChat(false);
+    }
+
+    console.log(user)
 
     return (
         <div className="min-h-screen w-[1200px] p-6 shadow-lg rounded-lg mx-auto my-4 border">
@@ -83,7 +126,7 @@ const RentalRequestList = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    // onClick={handleSubmit}
+                                    onClick={() => handleSubmit(rentalRequest.id, rentalRequest.User)}
                                     className={` flex items-center gap-2 text-base font-semibold border border-slate-600 bg-slate-600 hover:opacity-80 text-white py-1 px-4 rounded-md`}
                                 >
                                     <div className='flex items-center justify-center gap-1'>
@@ -94,6 +137,18 @@ const RentalRequestList = () => {
                         </div>
                     )
                 })
+            }
+            {
+                showChat && (
+                    <div className='fixed bottom-0 right-[50px]'>
+                        <ChatWindow
+                            player={player}
+                            user={user}
+                            handleCloseChat={handleCloseChat}
+                            rental={rental}
+                        />
+                    </div>
+                )
             }
         </div>
     );

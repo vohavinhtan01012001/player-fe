@@ -63,16 +63,14 @@ const Navbar: React.FC = () => {
                     </div>
                 </li>
                 <li className='hover:text-[#f0564a] duration-300'>
-                    <Link to="/Products">KOLS</Link>
-                </li>
-                <li className='hover:text-[#f0564a] duration-300'>
                     <Link to="/Policy">Policy</Link>
                 </li>
                 {
-                    localStorage.getItem("isPlayer") === 'false' || !localStorage.getItem("isPlayer") &&
-                    <li className='hover:text-[#f0564a] duration-300'>
-                        <Link to="/sign-up-player">Sign up as a player</Link>
-                    </li>
+                    (localStorage.getItem("isPlayer") === 'false' || !localStorage.getItem("isPlayer")) && (
+                        <li className='hover:text-[#f0564a] duration-300'>
+                            <Link to="/sign-up-player">Sign up as a player</Link>
+                        </li>
+                    )
                 }
                 {
                     localStorage.getItem("isPlayer") === "true" &&

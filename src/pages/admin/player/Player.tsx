@@ -201,7 +201,7 @@ const Player = () => {
     ];
 
     return (
-        <div className="w-[1500px] px-6 pt-36 flex flex-col mx-auto gap-4 h-full">
+        <div className="max-w-[1500px] px-6 pt-36 flex flex-col mx-auto gap-4 h-full">
             <div className="flex ">
                 <button
                     onClick={() => setIsOpenForm(true)}

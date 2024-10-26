@@ -13,6 +13,7 @@ import { GameType } from "../../admin/game/Game";
 import { PlayerService } from "../../../services/playerService";
 import { GameService } from "../../../services/gameService";
 import { toast } from "react-toastify";
+import WithdrawMoney from "./components/WithdrawMoney";
 
 const { Option } = Select;
 
@@ -38,18 +39,18 @@ const Profile = () => {
     const [games, setGames] = useState<GameType[]>([]);
     const [selectedGames, setSelectedGames] = useState<number[]>([]);
     const [price, setPrice] = useState<number>(0);
-    const [status, setStatus] = useState(null);
+    const [status, setStatus] = useState<number | null>(null);
     const [description, setDescription] = useState<string>('');
 
     const validationSchema = yup.object().shape({
-        name: player ? yup.string() : yup.string().required('Name is required'),
+        name: yup.string().required('Name is required'),
         email: player ? yup.string() : yup.string().email('Invalid email format').required('Email is required'),
         description: yup.string(),
-        games: player ? yup.array() : yup.array().of(yup.number().required('Game ID is required')).min(1, 'At least one game is required').required('Games are required'),
+        games: yup.array().of(yup.number().required('Game ID is required')).min(1, 'At least one game is required').required('Games are required'),
         price: player ? yup.number() : yup.number().min(0, 'Price must be a positive number').required('Price is required'),
     });
 
-    const { register, setValue, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+    const { register, setValue, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(validationSchema as any),
     });
 
@@ -72,23 +73,21 @@ const Profile = () => {
             let res: any;
             if (localStorage.getItem('accessToken')) {
                 res = await UserService.getUser();
-                if (localStorage.getItem('isPlayer') === 'true') {
-                    const players = await PlayerService.getPlayers();
-                    const user = res.data.data;
-                    const checkPlayer = players.data.data.find((item: any) => item.userId === user.id);
-                    setPlayer(checkPlayer);
-                    // Set giá trị ban đầu cho form dựa vào player
-                    if (checkPlayer) {
-                        setValue('name', checkPlayer.name);
-                        setValue('email', checkPlayer.email);
-                        setValue('description', checkPlayer.description || '');
-                        setValue('games', checkPlayer.Games || []);
-                        setSelectedGames(checkPlayer.Games.map((item: any) => item.id) || []);
-                        setPrice(checkPlayer.price || 0);
-                    }
-                } else {
-                    setUser(res.data.data);
+                const players = await PlayerService.getPlayers();
+                const user = res.data.data;
+                const checkPlayer = players.data.data.find((item: any) => item.userId === user.id);
+                setPlayer(checkPlayer);
+                // Set giá trị ban đầu cho form dựa vào player
+                if (checkPlayer) {
+                    setValue('name', checkPlayer.name);
+                    setValue('email', checkPlayer.email);
+                    setValue('description', checkPlayer.description || '');
+                    setValue('games', checkPlayer.Games.map((item: any) => item.id) || []);
+                    setSelectedGames(checkPlayer.Games.map((item: any) => item.id) || []);
+                    setPrice(checkPlayer.price || 0);
+                    setStatus(checkPlayer.status)
                 }
+                setUser(res.data.data);
             }
         } catch (error: any) {
             console.log(error);
@@ -107,8 +106,12 @@ const Profile = () => {
     // Thay đổi game được chọn
     const handleGamesChange = (value: number[]) => {
         setSelectedGames(value);
-        setValue('games', value); // Cập nhật giá trị của games
     };
+
+
+    useEffect(() => {
+        setValue("games", selectedGames)
+    }, [selectedGames, setValue])
 
     // Xử lý nút hủy
     const handleClose = () => {
@@ -126,7 +129,7 @@ const Profile = () => {
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         setLoading(true);
         try {
-            const payload = { ...data, avatar: image ? image : undefined, images: images ? images : undefined }
+            const payload = { ...data, avatar: image ? image : undefined, images: images ? images : undefined, status: status ? status : undefined }
             await PlayerService.updatePlayer(player.id, payload);
             toast.success("Updated player successfully")
         } catch (error) {
@@ -155,7 +158,7 @@ const Profile = () => {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className='grid grid-cols-3 gap-4 py-4'>
                                 <div className='col-span-3'>
-                                    <AvatarUploadField setImage={setImage} image={image ? image : player?.image} className="mx-auto w-52 h-52" />
+                                    <AvatarUploadField setImage={setImage} image={image ? image : player?.avatar} className="mx-auto w-52 h-52" />
                                     {errors.avatar && <p className='text-red-600'>{errors.avatar.message}</p>}
                                 </div>
                                 <div className='col-span-3 sm:col-span-1'>
@@ -210,15 +213,26 @@ const Profile = () => {
 
                                 </div>
                                 <div className='col-span-3 sm:col-span-1'>
-                                    <Label className='text-base font-semibold' required>Price <p className="text-red-600"> {new Intl.NumberFormat('vi-VN').format(price)} VNĐ/h</p></Label>
+                                    <Label className='text-base font-semibold' required>Trạng thái</Label>
                                     <Select
                                         style={{ width: '100%' }}
-                                        value={status}
-                                        onChange={setStatus}
+                                        value={status !== null ? status.toString() : '2'}
+                                        onChange={(value) => setStatus(value as any)}
                                     >
-                                      <Option>Đã sẵn sàng</Option>
+                                        <Option value="1">Đã sẵn sàng</Option>
+                                        <Option value="2">Chưa sẵn sàng</Option>
+                                        <Option value="3">Đang bận</Option>
                                     </Select>
 
+                                </div>
+                                <div className='col-span-3 sm:col-span-1'>
+                                    <Label className='text-base font-semibold' required>Số tiền trong túi</Label>
+                                    <div className="flex items-center justify-between">
+                                        <p>{new Intl.NumberFormat('vi-VN').format(user?.price)} VNĐ</p>
+                                        <div>
+                                            <WithdrawMoney user={user} getUser={getUser} />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className='col-span-3'>
                                     <Label className='text-base font-semibold' required>Images</Label>
@@ -236,14 +250,6 @@ const Profile = () => {
                                 </div>
                             </div>
                             <div className='flex justify-center gap-3'>
-                                <button
-                                    type="button"
-                                    className='border py-2 px-4 rounded-lg bg-gray-200 text-black flex items-center gap-2'
-                                    onClick={handleClose}
-                                >
-                                    <X size={20} />
-                                    Cancel
-                                </button>
                                 <button
                                     type="submit"
                                     className='border py-2 px-4 rounded-lg bg-blue-600 text-white flex items-center gap-2'

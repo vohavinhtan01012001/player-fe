@@ -52,6 +52,7 @@ const DialogPayment: React.FC = () => {
                         />
                         <p className='font-semibold'>{new Intl.NumberFormat('vi-VN').format(price)} VNĐ</p>
                     </div>
+                    <p className='text-center text-sm'><span className='font-bold'>Lưu ý:</span> Khi nạp tiền sẽ trừ 1% phí giao dịch</p>
                     <div className='flex items-center gap-5 justify-center pt-6'>
                         <button
                             type="button"

@@ -6,5 +6,8 @@ export const PaymentService = {
     },
   paymentVnpayCheck: (vnp_Params:any) => {
       return http.post(`payment/vnpay-check`,{vnp_Params});
+  },
+  withdrawMoney:(payload:any,user:any) => { 
+    return http.post(`payment/withdraw-money`,{payload,user});
   }
 }

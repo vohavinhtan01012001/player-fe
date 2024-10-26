@@ -1,9 +1,10 @@
 import { Modal, Select } from "antd";
 import Label from "../../../../components/Label";
 import { useEffect, useState } from "react";
-import { Send, X } from "lucide-react";
+import { Send, Wallet, X } from "lucide-react";
 import { RentalRequestService } from "../../../../services/rentalRequestService";
 import { toast } from "react-toastify";
+import { UserService } from "../../../../services/userService";
 
 type RentFormProps = {
     open: boolean
@@ -14,10 +15,26 @@ type RentFormProps = {
 const RentForm = ({ open, setOpen, player }: RentFormProps) => {
     const [duration, setDuration] = useState<number>(1);
     const [price, setPrice] = useState(0)
+    const [user, setUser] = useState<any>();
+
+    const getUser = async () => {
+        try {
+            let res: any;
+            if (localStorage.getItem('accessToken')) {
+                res = await UserService.getUser();
+                setUser(res.data.data);
+            }
+        } catch (error: any) {
+            console.log(error);
+        }
+    };
 
 
     useEffect(() => {
-        if (open) setPrice(player.price)
+        if (open) {
+            setPrice(player.price)
+            getUser()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
 
@@ -35,12 +52,19 @@ const RentForm = ({ open, setOpen, player }: RentFormProps) => {
 
     const handleSubmit = async () => {
         try {
-            const payload = { totalPrice: price, hours: duration, playerId: player.id};
-            await RentalRequestService.createRentalRequest(payload);
-            toast.success("Thuê thành công!")
-            handleClose();
+            const rental = await RentalRequestService.getRentalRequestByIdPlayer(player.id)
+            const checkRental = rental.data.data.some((data: any) => data.userId === user.id);
+            if (!checkRental) {
+                const payload = { totalPrice: price, hours: duration, playerId: player.id };
+                await RentalRequestService.createRentalRequest(payload);
+                toast.success("Yêu cầu thuê đã được gửi!")
+                handleClose();
+            }
+            else {
+                toast.warning("Đã có yêu cầu thuê trước đó!")
+            }
         } catch {
-            toast.success("Đã xảy ra lỗi!")
+            toast.error("Đã xảy ra lỗi!")
         }
     }
 
@@ -95,11 +119,19 @@ const RentForm = ({ open, setOpen, player }: RentFormProps) => {
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    className={` flex items-center gap-2 text-base font-semibold border border-slate-600 bg-slate-600 hover:opacity-80 text-white py-1 px-4 rounded-md`}
+                    disabled={user?.price < price}
+                    className={` flex items-center gap-2 text-base font-semibold border ${user?.price < price ? "opacity-80" : " "} border-slate-600 bg-slate-600 hover:opacity-80 text-white py-1 px-4 rounded-md`}
                 >
-                    <div className='flex items-center justify-center gap-1'>
-                        <><Send size={18} /><span>Thuê</span></>
-                    </div>
+                    {
+                        user?.price >= price ?
+                            <div className='flex items-center justify-center gap-1'>
+                                <><Send size={18} /><span>Thuê</span></>
+                            </div>
+                            :
+                            <div className='flex items-center justify-center gap-1'>
+                                <><Wallet size={18} /><span>Ví không đủ</span></>
+                            </div>
+                    }
                 </button>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { PlayerType } from "../../../admin/player/Player";
 const ProductItem = (data: PlayerType) => {
     const navigate = useNavigate()
     return (
-        <div className="flex flex-col border rounded-lg  max-w-[250px] cursor-pointer shadow-lg" onClick={() => navigate('/player/'+ data.id)}>
+        <div className="flex flex-col border rounded-lg  max-w-[250px] cursor-pointer shadow-lg" onClick={() => navigate('/player/' + data.id)}>
             <div className="w-full">
                 <img
                     src={data.avatar}
@@ -21,7 +21,11 @@ const ProductItem = (data: PlayerType) => {
                             data.status === 1 ?
                                 <div className="rounded-full w-3 h-3 bg-green-600"></div>
                                 :
-                                <div className="rounded-full w-3 h-3 bg-slate-600"></div>
+                                data.status === 2 ?
+                                    <div className="rounded-full w-3 h-3 bg-slate-600"></div>
+                                    :
+                                    <div className="rounded-full w-3 h-3 bg-red-600"></div>
+
                         }
                     </div>
                 </div>

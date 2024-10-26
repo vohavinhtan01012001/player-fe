@@ -16,5 +16,11 @@ export const AuthService = {
     httpInstance.removeBearerToken();
     localStorage.removeItem('accessToken');
     localStorage.removeItem('isPlayer');
-  }
+  },
+  forgotPassword: (email:string) => {
+    return http.post('auth/forgot-password',{email})
+  },
+  resetPassword: (slug:string,password:string) => {
+    return http.post('auth/reset-password',{slug,password})
+  },
 }

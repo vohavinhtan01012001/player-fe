@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { PlayerType } from "../../admin/player/Player";
 import RentForm from "./components/RentForm";
 import dayjs from "dayjs";
+import { UserService } from "../../../services/userService";
+import { RentalRequestService } from "../../../services/rentalRequestService";
+import ChatWindow from "./components/ChatWindow";
 
 const DetailPlayer = () => {
     const { id } = useParams();
     const [showRentForm, setShowRentForm] = useState(false);
     const [player, setPlayer] = useState<PlayerType>();
+    const [showChat, setShowChat] = useState(false);
+    const [user, setUser] = useState();
+    const [showChatWindow, setShowChatWindow] = useState(false);
+
     useEffect(() => {
         getPlayerDetail();
     }, [id]);
@@ -26,10 +33,56 @@ const DetailPlayer = () => {
         }
     };
 
+    const getUser = async () => {
+        try {
+            const user = await UserService.getUser();
+            setUser(user.data.data);
+            let idValue;
+            if (id) {
+                idValue = parseInt(id, 10);
+                if (isNaN(idValue)) {
+                    throw new Error("Invalid ID");
+                }
+            }
+
+            const rentalRequest = idValue ? await RentalRequestService.getRentalRequestByIdPlayerAll(idValue) : null;
+
+            if (rentalRequest && rentalRequest.data.data && rentalRequest.data.data.length > 0) {
+                console.log(rentalRequest.data.data)
+                // const checkChat = user.data.data.id === rentalRequest.data.data[0].userId ? true : false;
+                const checkChat = rentalRequest.data.data.some((data: any) => (user.data.data.id === data.userId && data.status === 1))
+                setShowChat(checkChat);
+            } else {
+                setShowChat(false);
+            }
+        } catch (error: any) {
+            console.log(error)
+        }
+    };
+
+    useEffect(() => {
+        if (localStorage.getItem('isPlayer') === "false") {
+            getUser();
+        }
+    }, [id]);
+
+
 
     const handleShowRent = () => {
         setShowRentForm(true);
     }
+
+    const handleShowChat = () => {
+        setShowChatWindow(true);
+    }
+
+    const handleCloseChat = () => {
+        setShowChatWindow(false);
+    }
+
+    const isPlayer = localStorage.getItem('isPlayer') === "true" || !localStorage.getItem('isPlayer');
+    const isStatusDisabled = player?.status === 2 || player?.status === 3;
+    const isDisabled = isPlayer || isStatusDisabled;
 
 
     return (
@@ -44,16 +97,20 @@ const DetailPlayer = () => {
                     </div>
                     <div className="px-3 py-2 w-full">
                         {
-                            player?.status !== 1 ?
-                                <p className="text-xl text-slate-600 font-semibold text-center">Chưa sẵn sàng</p>
-                                :
+                            player?.status === 1 ?
                                 <p className="text-xl text-green-600 font-semibold text-center">Đang sẵn sàng</p>
+                                :
+                                player?.status === 2 ?
+                                    <p className="text-xl text-slate-600 font-semibold text-center">Chưa sẵn sàng</p>
+                                    :
+                                    <p className="text-xl text-red-600 font-semibold text-center">Đang bận</p>
                         }
                         <p className="font-semibold text-sm py-2 text-center"><span className="text-slate-500">Ngày tham gia</span>: {dayjs(player?.created_at).format('DD/MM/YYYY')}</p>
+                        <p className="font-bold text-base  text-center text-red-600"><span className="text-slate-500">Giá tiền ({'vnđ/giờ'})</span>: {new Intl.NumberFormat('vi-VN').format(player?.price as any)} VNĐ</p>
                     </div>
                 </div>
                 <div className="">
-                    <div className="flex items-center justify-between border-b ">
+                    <div className="flex flex-col items-center justify-between border-b ">
                         {/* <div className="flex items-start w-full py-5 ">
                             <div>
                                 <p>Số người theo dõi</p>
@@ -66,11 +123,21 @@ const DetailPlayer = () => {
                                 <p className="font-semibold">Theo dõi</p>
                             </button>
                         </div> */}
+
+                        <div className="flex items-center justify-center w-full my-6">
+                            <button
+                                disabled={isDisabled}
+                                onClick={handleShowRent}
+                                className={`${isDisabled ? "opacity-50" : "hover:opacity-80"} w-[300px] py-3 font-semibold text-white bg-slate-600 rounded-lg`}>
+                                Thuê
+                            </button>
+                        </div>
                         {
-                            !localStorage.getItem('player') &&
-                            <div className="flex items-center justify-center w-full my-6">
-                                <button onClick={handleShowRent} className="w-[300px] py-3 font-semibold text-white bg-slate-600 rounded-lg hover:opacity-80">
-                                    Thuê
+                            showChat && <div className="flex items-center justify-center w-full my-6">
+                                <button
+                                    onClick={handleShowChat}
+                                    className={`w-[300px] py-3 font-semibold text-[#333] border bg-white rounded-lg`}>
+                                    Chat
                                 </button>
                             </div>
                         }
@@ -131,6 +198,16 @@ const DetailPlayer = () => {
                 setOpen={setShowRentForm}
                 player={player}
             />
+            {
+                showChatWindow &&
+                <div className="fixed bottom-0 right-[50px]">
+                    <ChatWindow
+                        player={player}
+                        user={user}
+                        handleCloseChat={handleCloseChat}
+                    />
+                </div>
+            }
         </div>
     )
 }
