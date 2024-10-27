@@ -1,6 +1,6 @@
 import { Send } from "lucide-react";
 import { toast } from "react-toastify";
-import { AuthService } from "../../../../services/AuthService";
+import { AuthService } from "../../../../services/authService";
 import { useState } from "react";
 
 const ForgotPassword = () => {

@@ -3,8 +3,8 @@ import Label from "../../../../components/Label";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { AuthService } from '../../../../services/AuthService';
 import { toast } from "react-toastify";
+import { AuthService } from "../../../../services/authService";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),

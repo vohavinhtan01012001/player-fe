@@ -34,9 +34,9 @@ const RentalRequestList = () => {
     const getUserChat = async () => {
         try {
             const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
-            setUser(res.data.data.find(p => p.status === 1).User)
+            setUser(res.data.data.find((p:any) => p.status === 1).User)
             setShowChat(true);
-            setRental(res.data.data.find(p => p.status === 1))
+            setRental(res.data.data.find((p:any) => p.status === 1))
         } catch (error) {
             console.log(error);
         }
@@ -76,7 +76,7 @@ const RentalRequestList = () => {
     const handleSubmit = async (id: number, user: any) => {
         try {
             const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
-            if (res.data.data.some(p => p.status === 1)) {
+            if (res.data.data.some((p:any) => p.status === 1)) {
                 toast.error("You have confirmed a previous request")
                 return;
             }

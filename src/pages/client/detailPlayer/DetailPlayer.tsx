@@ -162,6 +162,16 @@ const DetailPlayer = () => {
                             })
                         }
                     </div>
+                    <div className="grid grid-cols-4 gap-4 w-full pt-6 pb-8 border-t border-b">
+                        <div className="col-span-4 text-center pb-3">
+                            <h1 className="text-3xl font-semibold text-[#333]">Bình luận</h1>
+                        </div>
+                        <div>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex items-start flex-col gap-4 w-full py-8 border-b overflow-hidden">
                         <div className="col-span-4 text-center pb-3 mx-auto">
                             <h1 className="text-3xl font-semibold text-[#333]">Thông tin player</h1>

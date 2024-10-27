@@ -1,4 +1,3 @@
-import { Select } from "antd";
 import { PlayerService } from "../../../services/playerService";
 import { useEffect, useState } from "react";
 import { PlayerType } from "../../admin/player/Player";
@@ -7,7 +6,6 @@ import ButtonRefresh from "../../../components/ButtonRefresh";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import ProductItem from "../home/components/ProductItem";
-const { Option } = Select;
 const Collection = () => {
     const { id } = useParams();
     const [players, setPlayers] = useState<PlayerType[]>([]);

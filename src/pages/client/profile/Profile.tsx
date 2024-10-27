@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { InputNumber, Select } from "antd";
 import * as yup from 'yup';
 import ImagesUploadField from "../../../components/ImagesUploadField";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
 import { GameType } from "../../admin/game/Game";
 import { PlayerService } from "../../../services/playerService";
 import { GameService } from "../../../services/gameService";
@@ -114,16 +114,16 @@ const Profile = () => {
     }, [selectedGames, setValue])
 
     // Xử lý nút hủy
-    const handleClose = () => {
-        if (player) {
-            setValue('name', player.name);
-            setValue('email', player.email);
-            setValue('description', player.description || '');
-            setValue('games', player.Games || []);
-            setSelectedGames(player.Games.map((item: any) => item.id) || []);
-            setPrice(player.price || 0);
-        }
-    };
+    // const handleClose = () => {
+    //     if (player) {
+    //         setValue('name', player.name);
+    //         setValue('email', player.email);
+    //         setValue('description', player.description || '');
+    //         setValue('games', player.Games || []);
+    //         setSelectedGames(player.Games.map((item: any) => item.id) || []);
+    //         setPrice(player.price || 0);
+    //     }
+    // };
 
     // Xử lý submit form
     const onSubmit: SubmitHandler<FormData> = async (data) => {

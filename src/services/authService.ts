@@ -1,15 +1,13 @@
-import { LoginForm } from "../pages/auth/components/login/Login";
-import { RegisterRequest } from "../pages/auth/components/register/Register";
 import { http, httpInstance } from "../util/api";
 
 export const AuthService = {
-  register: (data:RegisterRequest) => {
+  register: (data:any) => {
     return http.post("auth/register", data);
   },
-  login: (data:LoginForm) => {
+  login: (data:any) => {
     return http.post("auth/login", data);
   },
-  loginPlayer: (data:LoginForm) => {
+  loginPlayer: (data:any) => {
     return http.post("auth/login-player", data);
   },
   logout: () => {

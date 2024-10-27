@@ -1,8 +1,8 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { AuthService } from "../../../../services/AuthService";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthService } from "../../../../services/authService";
 
 const ResetPassword = () => {
     const [password, setPassword] = useState("")

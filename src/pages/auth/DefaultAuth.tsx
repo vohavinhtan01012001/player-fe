@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './authform.scss' // Import your CSS file here
 import Register from './components/register'
 import Login from './components/login'

@@ -15,9 +15,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const newSocket = io("http://localhost:5000");
-
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-
     // if (isAdmin) {
     newSocket.emit("admin-join");
     // }

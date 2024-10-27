@@ -1,12 +1,11 @@
 import { Avatar as AvatarD } from "antd";
-import { User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import {useNavigate } from "react-router-dom";
-import { AuthService } from "../services/AuthService";
+import { useNavigate } from "react-router-dom";
+import { AuthService } from "../services/authService";
 
 
 const AvatarDialog = ({
-    setShow
+    setShow,
 }: {
     setShow: (value: boolean) => void;
 }) => {
@@ -34,12 +33,41 @@ const AvatarDialog = ({
 }
 
 
-const Avatar = () => {
+const isColorDark = (color: string) => {
+    const rgb = parseInt(color.slice(1), 16); // Convert hex to RGB
+    const r = (rgb >> 16) & 0xff; // Red
+    const g = (rgb >>  8) & 0xff; // Green
+    const b = (rgb >>  0) & 0xff; // Blue
 
-    const [show, setShow] = useState(false)
+    // Calculate luminance (brightness)
+    const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return brightness < 128; // If brightness is less than 128, it's dark
+};
+
+const Avatar = ({ user }: { user: { fullName: string } }) => {
+    const [show, setShow] = useState(false);
+    const [backgroundColor, setBackgroundColor] = useState<string>('');
+    const [textColor, setTextColor] = useState<string>('#f56a00'); // Default text color
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Function to generate a random color
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
     useEffect(() => {
+        // Generate a random color once when the component mounts
+        const randomColor = getRandomColor();
+        setBackgroundColor(randomColor);
+
+        // Set text color based on background color brightness
+        setTextColor(isColorDark(randomColor) ? '#ffffff' : '#000000');
+
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
@@ -57,10 +85,22 @@ const Avatar = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    // Get the first letter of the user's full name
+    const firstLetter = user.fullName ? user.fullName.charAt(0).toUpperCase() : '';
+
     return (
         <div className="relative">
-            <div className="" onClick={() => setShow(!show)}>
-                <AvatarD style={{ backgroundColor: '#87d068' }} icon={<User />} />
+            <div onClick={() => setShow(!show)}>
+                <AvatarD
+                    style={{
+                        backgroundColor: backgroundColor,
+                        color: textColor
+                    }}
+                    className="shadow-lg"
+                >
+                    {firstLetter}
+                </AvatarD>
             </div>
             {
                 show &&
@@ -73,7 +113,7 @@ const Avatar = () => {
                 </div>
             }
         </div>
-    )
+    );
 }
 
 export default Avatar;

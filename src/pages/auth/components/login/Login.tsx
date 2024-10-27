@@ -4,9 +4,9 @@ import * as yup from 'yup';
 import Input from "../../../../components/Input";
 import Label from "../../../../components/Label";
 import { toast } from 'react-toastify';
-import { AuthService } from '../../../../services/AuthService';
 import { Link, useNavigate } from 'react-router-dom';
 import { PlayerService } from '../../../../services/playerService';
+import { AuthService } from '../../../../services/authService';
 
 export type LoginForm = {
   email: string;

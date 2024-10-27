@@ -1,8 +1,8 @@
 import { Gamepad2, LogOut } from "lucide-react";
 import MenuList from "./MenuList";
-import { AuthService } from "../../../services/AuthService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AuthService } from "../../../services/authService";
 
 const Sidebar = () => {
     const navigate = useNavigate();

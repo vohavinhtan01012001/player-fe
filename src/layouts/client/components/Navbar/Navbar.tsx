@@ -11,12 +11,12 @@ import Avatar from '../../../../components/Avatar';
 const Navbar: React.FC = () => {
     const [games, setGames] = useState<GameType[]>([])
     const navigate = useNavigate()
-    const [checkUser, setCheckUser] = useState(false);
+    const [user, setUser] = useState(null);
 
     const getUser = async () => {
         try {
             const res = await UserService.getUser();
-            setCheckUser(res.data ? true : false)
+            setUser(res.data.data)
         } catch (error: any) {
             toast.error(error?.response?.data?.message);
         }
@@ -83,9 +83,9 @@ const Navbar: React.FC = () => {
                 <button ><NotificationList /></button>
                 <button ><DialogPayment /></button>
                 {
-                    checkUser ?
+                    user ?
                         <div className='-mt-[2px]'>
-                            <Avatar />
+                            <Avatar user={user} />
                         </div>
                         :
                         <Link to="/login">
