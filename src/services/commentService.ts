@@ -7,7 +7,7 @@ export const CommentService = {
   },
 
   // Create a new comment
-  createComment: (data: { playerId: number; userId: number; message: string; rating: number }) => {
+  createComment: (data: { playerId: number; userId: number; message: string; rating: number,rental:any }) => {
     return http.post("comment", data);
   },
 
@@ -19,5 +19,8 @@ export const CommentService = {
   // Delete a comment by ID
   deleteComment: (commentId: number) => {
     return http.delete(`comment/${commentId}`);
+  },
+  getTop5PlayersWithMostLikes: (month:number,year:number) => {
+    return http.get(`comment/get-top-player/${month}/${year}`);
   }
 };

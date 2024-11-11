@@ -47,12 +47,14 @@ const DialogPayment: React.FC = () => {
                             onChange={(value) => setPrice(value || 0)}
                             value={price}
                             type='number'
-                            addonAfter="VNĐ"
+                            addonAfter="USD"
                             defaultValue={0}
                         />
-                        <p className='font-semibold'>{new Intl.NumberFormat('vi-VN').format(price)} VNĐ</p>
+                        <p className='font-semibold'>{new Intl.NumberFormat('USD').format(price)} USD</p>
                     </div>
-                    <p className='text-center text-sm'><span className='font-bold'>Lưu ý:</span> Khi nạp tiền sẽ trừ 1% phí giao dịch</p>
+                    <p className='text-center text-sm'>
+                        <span className='font-bold'>Note:</span> A 1% transaction fee will be deducted when depositing funds.
+                    </p>
                     <div className='flex items-center gap-5 justify-center pt-6'>
                         <button
                             type="button"

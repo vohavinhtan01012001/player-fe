@@ -14,7 +14,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io("https://node-mysql-0u5t.onrender.com");
+    const newSocket = io("http://localhost:5000");
     // if (isAdmin) {
     newSocket.emit("admin-join");
     // }

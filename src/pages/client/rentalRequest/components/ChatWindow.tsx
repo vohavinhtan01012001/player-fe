@@ -4,6 +4,7 @@ import { ChatService } from '../../../../services/chatService';
 import socketIOClient from 'socket.io-client';
 import { RentalRequestService } from '../../../../services/rentalRequestService';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 interface Message {
   id: number;
   user: string;
@@ -11,18 +12,22 @@ interface Message {
   timestamp: string;
   userId: any;
   senderType: 'user' | 'player';
+  donate: 0 | 1;
 }
 
 type ChatProps = {
   player: any;
   user: any;
   handleCloseChat: () => void;
-  rental: any
+  rental: any;
 }
-const SOCKET_SERVER_URL = "https://node-mysql-0u5t.onrender.com";
+const SOCKET_SERVER_URL = "http://localhost:5000";
 
 const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental }) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const userId = queryParams.get('userId');
   const [input, setInput] = useState<string>('');
   const messageEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -42,7 +47,8 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
           content: newMessage.message,
           timestamp: new Date(newMessage.created_at).toLocaleTimeString(),
           userId: newMessage.userId,
-          senderType: newMessage.senderType
+          senderType: newMessage.senderType,
+          donate: newMessage.donate
         }
       ]);;
     });
@@ -63,7 +69,8 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
           content: msg.message,
           timestamp: new Date(msg.created_at).toLocaleTimeString(),
           userId: msg.userId,
-          senderType: msg.senderType
+          senderType: msg.senderType,
+          donate: msg.donate
         }));
         setMessages(fetchedMessages);
       } catch (error) {
@@ -72,7 +79,7 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
     };
 
     loadMessages();
-  }, []);
+  }, [player?.id, user?.id, userId]);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -80,16 +87,6 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
 
   const handleSendMessage = async () => {
     if (input.trim()) {
-      // const newMessage: Message = {
-      //   id: messages.length + 1,
-      //   user: 'You',
-      //   content: input,
-      //   timestamp: new Date().toLocaleTimeString(),
-      //   userId: user.id,
-      //   senderType: 'player'
-      // };
-
-      // setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInput('');
 
       try {
@@ -131,8 +128,11 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
       {/* Header */}
       <div className="bg-blue-500 flex items-center justify-between text-white p-4 rounded-t-lg">
         <div className=''>
-          <h2 className="text-lg font-semibold">{player.name}</h2>
-          <button onClick={handleSubmit} className='py-1 hover:text-red-600 duration-300'>Confirmed completion</button>
+          <h2 className="text-lg font-semibold">{user?.fullName}</h2>
+          {
+            !userId &&
+            <button onClick={handleSubmit} className='py-1 hover:text-red-600 duration-300'>Confirmed completion</button>
+          }
         </div>
         <div>
           <button onClick={handleCloseChat}>
@@ -150,13 +150,13 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
               }`}
           >
             <div
-              className={`inline-block px-4 py-1 rounded-lg relative  ${message.senderType === 'player'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-black'
+              className={`inline-block px-4 py-1 rounded-lg relative  max-w-[85%] ${message.senderType === 'player'
+                ? 'bg-blue-600 text-white' :
+                message.donate === 1 ? 'bg-green-600 text-white min-w-[250px]' : 'bg-gray-200 text-black'
                 }`}
             >
               <div>
-                <p>{message.content}</p>
+                <p dangerouslySetInnerHTML={{ __html: message.content }}></p>
                 <p className='text-[10px]'>{message.timestamp}</p>
               </div>
             </div>
@@ -176,7 +176,7 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
           placeholder="Type a message..."
         />
       </div>
-    </div>
+    </div >
   );
 };
 

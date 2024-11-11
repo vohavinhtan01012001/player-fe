@@ -10,7 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@hookform/resolvers": "^3.9.0",
+    "@mui/material": "^6.1.6",
+    "@mui/styled-engine-sc": "^6.1.6",
+    "@mui/x-charts": "^7.22.1",
     "antd": "^5.21.2",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
@@ -22,6 +27,7 @@
     "react-toastify": "^10.0.5",
     "sass": "^1.79.4",
     "socket.io-client": "^4.8.0",
+    "styled-components": "^6.1.13",
     "yup": "^1.4.0"
   },
   "devDependencies": {

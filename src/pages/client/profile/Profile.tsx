@@ -14,6 +14,8 @@ import { PlayerService } from "../../../services/playerService";
 import { GameService } from "../../../services/gameService";
 import { toast } from "react-toastify";
 import WithdrawMoney from "./components/WithdrawMoney";
+import ChangeNewPassword from "./components/ChangeNewPassword";
+import UserProfile from "./components/UserProfile";
 
 const { Option } = Select;
 
@@ -113,19 +115,6 @@ const Profile = () => {
         setValue("games", selectedGames)
     }, [selectedGames, setValue])
 
-    // Xử lý nút hủy
-    // const handleClose = () => {
-    //     if (player) {
-    //         setValue('name', player.name);
-    //         setValue('email', player.email);
-    //         setValue('description', player.description || '');
-    //         setValue('games', player.Games || []);
-    //         setSelectedGames(player.Games.map((item: any) => item.id) || []);
-    //         setPrice(player.price || 0);
-    //     }
-    // };
-
-    // Xử lý submit form
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         setLoading(true);
         try {
@@ -143,14 +132,7 @@ const Profile = () => {
         <div className="border shadow-lg max-w-[1200px] min-h-screen mx-auto my-[20px] rounded-lg">
             <div className="p-4">
                 {localStorage.getItem("isPlayer") === "false" && (
-                    <div className="profile-container py-3 px-6">
-                        <h1 className="text-3xl font-bold mb-4 text-center uppercase tracking-widest">Profile</h1>
-                        <div className="flex flex-col gap-10 text-xl py-3">
-                            <p><strong>Name:</strong> {user?.fullName}</p>
-                            <p><strong>Email:</strong> {user?.email}</p>
-                            <p><strong>Price:</strong> {new Intl.NumberFormat('vi-VN').format(user?.price)} VNĐ</p>
-                        </div>
-                    </div>
+                   <UserProfile user={user}/>
                 )}
                 {localStorage.getItem("isPlayer") === "true" && (
                     <div className="profile-container py-3 px-6">
@@ -182,6 +164,11 @@ const Profile = () => {
                                         errorMessage={errors.email?.message}
                                     />
                                 </div>
+                                <div className='col-span-3 sm:col-span-1 h-full'>
+                                    <div className="h-full flex items-end">
+                                        <ChangeNewPassword />
+                                    </div>
+                                </div>
                                 <div className='col-span-3 sm:col-span-1'>
                                     <Label className='text-base font-semibold' required>Games</Label>
                                     <Select
@@ -200,12 +187,12 @@ const Profile = () => {
                                     {errors.games && <p className='text-red-600'>{errors.games.message}</p>}
                                 </div>
                                 <div className='col-span-3 sm:col-span-1'>
-                                    <Label className='text-base font-semibold' required>Price <p className="text-red-600"> {new Intl.NumberFormat('vi-VN').format(price)} VNĐ/h</p></Label>
+                                    <Label className='text-base font-semibold' required>Price <p className="text-red-600"> {new Intl.NumberFormat('USD').format(price)} USD/h</p></Label>
                                     <InputNumber
                                         defaultValue={0}
                                         value={price}
                                         type="number"
-                                        addonAfter="VNĐ"
+                                        addonAfter="USD"
                                         onChange={(value) => setPrice(value !== null ? value : 0)}
                                         className="w-full"
                                     />
@@ -213,27 +200,27 @@ const Profile = () => {
 
                                 </div>
                                 <div className='col-span-3 sm:col-span-1'>
-                                    <Label className='text-base font-semibold' required>Trạng thái</Label>
+                                    <Label className='text-base font-semibold' required>Status</Label>
                                     <Select
                                         style={{ width: '100%' }}
                                         value={status !== null ? status.toString() : '2'}
                                         onChange={(value) => setStatus(value as any)}
                                     >
-                                        <Option value="1">Đã sẵn sàng</Option>
-                                        <Option value="2">Chưa sẵn sàng</Option>
-                                        <Option value="3">Đang bận</Option>
+                                        <Option value="1">Ready</Option>
+                                        <Option value="2">Not Ready</Option>
+                                        <Option value="3">Busy</Option>
                                     </Select>
-
                                 </div>
                                 <div className='col-span-3 sm:col-span-1'>
-                                    <Label className='text-base font-semibold' required>Số tiền trong túi</Label>
+                                    <Label className='text-base font-semibold' required>Wallet Balance</Label>
                                     <div className="flex items-center justify-between">
-                                        <p>{new Intl.NumberFormat('vi-VN').format(user?.price)} VNĐ</p>
+                                        <p>{new Intl.NumberFormat('USD').format(user?.price)} USD</p>
                                         <div>
                                             <WithdrawMoney user={user} getUser={getUser} />
                                         </div>
                                     </div>
                                 </div>
+
                                 <div className='col-span-3'>
                                     <Label className='text-base font-semibold' required>Images</Label>
                                     <ImagesUploadField setImages={setImages} images={images ? images : player?.images} />

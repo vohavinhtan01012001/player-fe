@@ -12,21 +12,6 @@ const DefaultLayoutAdmin = ({
 }) => {
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // useEffect(() => {
-    //     if (!socket) return;
-
-    //     const handleNewPlayer = (data: any) => {
-    //         toast.info(data.message);
-    //         console.log("New Player Data:", data.player);
-    //     };
-
-    //     socket.on("newPlayerNotification", handleNewPlayer);
-
-    //     return () => {
-    //         socket.off("newPlayerNotification", handleNewPlayer);
-    //     };
-    // }, [socket]);
-
     const getUser = async () => {
         try {
             const res = await UserService.getUser();

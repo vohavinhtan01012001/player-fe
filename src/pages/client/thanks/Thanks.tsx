@@ -4,11 +4,11 @@ import { PaymentService } from "../../../services/paymentService";
 
 const Thanks = () => {
     const [searchParams] = useSearchParams();
-    const [isRequestPending, setIsRequestPending] = useState(false); 
+    const [isRequestPending, setIsRequestPending] = useState(false);
     const hasMounted = useRef(false); // Ref để kiểm tra lần mount đầu tiên
-    
+
     const vnp_Amount = searchParams.get('vnp_Amount');
-    const formattedAmount = new Intl.NumberFormat('vi-VN').format((Number(vnp_Amount) || 0) / 100); // Chuyển đổi VNĐ
+    const formattedAmount = new Intl.NumberFormat('USD').format((Number(vnp_Amount) / 23000 || 0) / 100); // Chuyển đổi USD
 
     // Sử dụng useMemo để tính toán mergedParams chỉ khi searchParams thay đổi
     const mergedParams = useMemo(() => {
@@ -25,7 +25,7 @@ const Thanks = () => {
 
     const handlePaymentCheck = async () => {
         const storedOrderId = localStorage.getItem("processedOrderId");
-        const currentOrderId = mergedParams.vnp_TxnRef; 
+        const currentOrderId = mergedParams.vnp_TxnRef;
 
         if (storedOrderId === currentOrderId || isRequestPending) {
             console.log("Giao dịch đã được xử lý, không thực hiện lại.");
@@ -49,17 +49,17 @@ const Thanks = () => {
             // Lần đầu tiên component mount
             hasMounted.current = true; // Đánh dấu là đã mount
             const storedOrderId = localStorage.getItem("processedOrderId");
-            const currentOrderId = mergedParams.vnp_TxnRef; 
+            const currentOrderId = mergedParams.vnp_TxnRef;
             if (storedOrderId !== currentOrderId && !isRequestPending) {
-                handlePaymentCheck(); 
+                handlePaymentCheck();
             }
         }
     }, [mergedParams, isRequestPending]);
 
     return (
-        <div>
+        <div>   
             <h1 className="text-center text-3xl font-bold min-h-screen flex items-center justify-center">
-                Đã Thêm {formattedAmount} VNĐ vào túi thành công!
+                Successfully added {formattedAmount} USD to your wallet!
             </h1>
         </div>
     );

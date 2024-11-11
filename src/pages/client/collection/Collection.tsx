@@ -6,6 +6,7 @@ import ButtonRefresh from "../../../components/ButtonRefresh";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import ProductItem from "../home/components/ProductItem";
+
 const Collection = () => {
     const { id } = useParams();
     const [players, setPlayers] = useState<PlayerType[]>([]);
@@ -13,8 +14,6 @@ const Collection = () => {
     const [selectedGender, setSelectedGender] = useState(0);
     const [activeStatus, setActiveStatus] = useState(false);
     const [playerName, setPlayerName] = useState('');
-
-
 
     useEffect(() => {
         getPlayerList();
@@ -28,7 +27,7 @@ const Collection = () => {
             }
             const res = await PlayerService.getPlayersClient(idValue);
             setPlayers(res.data.data);
-            setPlayersFilter(res.data.data)
+            setPlayersFilter(res.data.data);
         } catch (error: any) {
             console.log(error);
         }
@@ -53,24 +52,29 @@ const Collection = () => {
 
     const handleDeleteFilter = () => {
         setActiveStatus(false);
-        setPlayerName('')
+        setPlayerName('');
         setSelectedGender(0);
-    }
-
+    };
 
     return (
-        <div className="vip-section p-6 mx-20 ">
+        <div className="vip-section p-6 mx-20">
             <div className="flex items-center my-4">
                 <form className="flex items-center gap-4" onSubmit={handleFilter}>
                     <ButtonActive active={activeStatus} onClick={() => setActiveStatus(!activeStatus)}>
-                        Sẵn sàng
+                    Ready
                     </ButtonActive>
-                    <input value={playerName} onChange={(e: any) => setPlayerName(e.target.value)} type="text" placeholder="Name Player" className="border rounded-lg px-3 py-[4px] outline-none w-[300px]" />
+                    <input 
+                        value={playerName} 
+                        onChange={(e: any) => setPlayerName(e.target.value)} 
+                        type="text" 
+                        placeholder="Player Name" 
+                        className="border rounded-lg px-3 py-[4px] outline-none w-[300px]" 
+                    />
                     <button type="submit" className="bg-[#f0564a] text-white px-3 py-1 rounded-xl shadow-lg">
-                        Tìm kiếm
+                        Search
                     </button>
-                    <button onClick={handleDeleteFilter} type="button" className=" text-[#333] px-3 py-1 rounded-xl border">
-                        xóa tất cả
+                    <button onClick={handleDeleteFilter} type="button" className="text-[#333] px-3 py-1 rounded-xl border">
+                        Clear All
                     </button>
                 </form>
             </div>
@@ -82,7 +86,7 @@ const Collection = () => {
                             setTimeout(() => {
                                 getPlayerList();
                                 resolve(null);
-                                toast.success("Players refreshed successfully")
+                                toast.success("Players refreshed successfully");
                             }, 2000);
                         })
                     } />
@@ -93,12 +97,12 @@ const Collection = () => {
                     players.map((player, index) => {
                         return (
                             <ProductItem key={index} {...player} />
-                        )
+                        );
                     })
                 }
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Collection;

@@ -26,6 +26,8 @@ type FormData = {
     games: number[];
     images?: File[];
     price: number;
+    phone: string;
+    address: string;
 };
 
 
@@ -56,6 +58,12 @@ const FormSignUpPlayer = () => {
             ? yup.string()
             : yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
         description: yup.string(),
+        phone: user
+        ? yup.string()
+        : yup.string().required('Phone is required'),
+        address: user
+        ? yup.string()
+        : yup.string().required('Address is required'),
         games: yup.array()
             .of(yup.number().required('Game ID is required'))
             .min(1, 'At least one game is required')
@@ -158,12 +166,12 @@ const FormSignUpPlayer = () => {
             setLoading(false);
         }
     };
-    
+
 
     return (
         <div className="max-w-[1000px] mx-auto py-7">
             <div>
-                <h1 className="text-center font-bold text-3xl text-[#333]">Đăng ký làm player</h1>
+                <h1 className="text-center font-bold text-3xl text-[#333]">Sign Up as a Player</h1>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="border my-4 p-4 rounded-lg shadow-xl">
                 <div className=' my-[20px] py-[15px] relative grid grid-cols-2 grid-rows-2 gap-4'>
@@ -212,6 +220,48 @@ const FormSignUpPlayer = () => {
                         }
                     </div>
                     <div className='w-full px-2 flex flex-col gap-2'>
+                        <Label className='text-base font-semibold' required>Phone Number</Label>
+                        {
+                            user ?
+                                <Input
+                                    className='border h-[35px] rounded outline-none p-3 w-full'
+                                    type='text'
+                                    {...register('phone')}
+                                    value={user?.phone}
+                                    disabled
+                                    errorMessage={errors.phone?.message}
+                                />
+                                :
+                                <Input
+                                    className='border h-[35px] rounded outline-none p-3 w-full'
+                                    type='text'
+                                    {...register('phone')}
+                                    errorMessage={errors.phone?.message}
+                                />
+                        }
+                    </div>
+                    <div className='w-full px-2 flex flex-col gap-2'>
+                        <Label className='text-base font-semibold' required>Address</Label>
+                        {
+                            user ?
+                                <Input
+                                    className='border h-[35px] rounded outline-none p-3 w-full'
+                                    type='text'
+                                    {...register('address')}
+                                    value={user?.address}
+                                    disabled
+                                    errorMessage={errors.address?.message}
+                                />
+                                :
+                                <Input
+                                    className='border h-[35px] rounded outline-none p-3 w-full'
+                                    type='text'
+                                    {...register('address')}
+                                    errorMessage={errors.address?.message}
+                                />
+                        }
+                    </div>
+                    <div className='w-full px-2 flex flex-col gap-2'>
                         {
                             <>
                                 <Label className='text-base font-semibold' required>Password</Label>
@@ -256,13 +306,13 @@ const FormSignUpPlayer = () => {
                     <div className='w-full px-2 flex flex-col gap-2'>
                         <div className='flex items-center'>
                             <Label className='text-base font-semibold' required>Price</Label>
-                            <p className='font-semibold pl-5'>({new Intl.NumberFormat('vi-VN').format(price)}VNĐ/h)</p>
+                            <p className='font-semibold pl-5'>({new Intl.NumberFormat('USD').format(price)}USD/h)</p>
                         </div>
                         <InputNumber
                             onChange={(value) => setPrice(value || 0)}
                             value={price}
                             type='number'
-                            addonAfter="VNĐ"
+                            addonAfter="USD"
                             defaultValue={0}
                         />
                         {errors.price && <p className='text-red-600 -mt-2'>{errors.price.message}</p>}
@@ -300,8 +350,8 @@ const FormSignUpPlayer = () => {
                 </div>
             </form>
             <div className="flex items-center gap-2">
-                <p className="font-bold ">Lưu ý:</p>
-                <p className="">Sau khi nộp form đăng ký sẽ chờ admin liên hệ và duyệt</p>
+                <p className="font-bold">Note:</p>
+                <p className="">After submitting the registration form, you will wait for the admin to contact and approve.</p>
             </div>
         </div>
     )

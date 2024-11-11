@@ -1,3 +1,5 @@
+import Banner from "../pages/admin/banner/Banner"
+import Dashboard from "../pages/admin/dashboard/Dashboard"
 import Game from "../pages/admin/game/Game"
 import Player from "../pages/admin/player/Player"
 import User from "../pages/admin/user/User"
@@ -75,6 +77,14 @@ const privateRoutes = [
   {
     path: '/games',
     component: Game
+  },
+  {
+    path: '/dashboard',
+    component: Dashboard
+  },
+  {
+    path: '/banners',
+    component: Banner
   },
 ]
 

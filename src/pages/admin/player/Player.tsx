@@ -19,7 +19,10 @@ export type PlayerType = {
     status: number;
     gender: string;
     price: number;
+    followers: number;
     created_at: string;
+    phone: string;
+    address: string;
 };
 
 const Player = () => {

@@ -34,5 +34,8 @@ export const PlayerService = {
 
   updateStatusPlayer: (id: number, status: number) => {
     return http.patch(`player/update-status/${id}`, { status });
+  },
+  updateFollowerPlayer: (id: number, follower: number) => {
+    return http.patch(`player/update-follower/${id}`, { follower });
   }
 };

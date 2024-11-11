@@ -14,7 +14,7 @@ const InputPrice = React.forwardRef<HTMLInputElement, InputProps>(({ errorMessag
                 type="number"
             />
             <div className="absolute top-1 right-2 ">
-                <p className="flex items-center justify-center">VNĐ</p>
+                <p className="flex items-center justify-center">USD</p>
             </div>
         </div>
         {errorMessage && <div className="text-red-600 text-sm">{errorMessage}</div>}

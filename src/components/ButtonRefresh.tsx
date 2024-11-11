@@ -18,7 +18,7 @@ const ButtonRefresh = ({ onClick }: ButtonRefreshProps) => {
 
     return (
         <button className={`flex py-1 items-center gap-2 border rounded-xl px-2 ${loading ? 'opacity-65' : ''}`} onClick={onRefresh}>
-            <p className="text-[#f0564a]">làm mới</p>
+            <p className="text-[#f0564a]">Refresh</p>
             <RefreshCcw size={15} className={`${loading ? 'animate-spin' : ''}`} />
         </button>
     )

@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { toast } from "react-toastify";
 import { AuthService } from "../../../../services/authService";
 
+// Updated validation schema
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),
   email: yup.string().email("Invalid email format").required("Email is required"),
@@ -13,6 +14,8 @@ const schema = yup.object().shape({
   confirmPassword: yup.string()
     .required("Confirm Password is required")
     .oneOf([yup.ref('password')], "Passwords must match"),
+  phone: yup.string().matches(/^(\+?\d{1,4}[\s-])?(\(?\d{1,3}\)?[\s-]?)?[\d\s-]{7,15}$/, "Invalid phone number").required("Phone number is required"),
+  address: yup.string().required("Address is required"),
 });
 
 export type RegisterForm = {
@@ -20,12 +23,16 @@ export type RegisterForm = {
   email: string;
   password: string;
   confirmPassword: string;
+  phone: string;
+  address: string;
 }
 
 export type RegisterRequest = {
   fullName: string;
   email: string;
   password: string;
+  phone: string;
+  address: string;
 }
 
 function Register({
@@ -79,6 +86,20 @@ function Register({
         type='password'
         {...register('confirmPassword')}
         errorMessage={errors.confirmPassword?.message}
+      />
+
+      <Label required>Phone Number</Label>
+      <Input
+        type='text'
+        {...register('phone')}
+        errorMessage={errors.phone?.message}
+      />
+
+      <Label required>Address</Label>
+      <Input
+        type='text'
+        {...register('address')}
+        errorMessage={errors.address?.message}
       />
 
       <button type='submit'>Sign Up</button>

@@ -42,6 +42,8 @@ const validationSchema = yup.object().shape({
     ,
     gender: yup.string().oneOf(['male', 'female'], 'Invalid gender').required('Gender is required'),
     price: yup.number().min(0, 'Price must be a positive number').required('Price is required'),
+    phone: yup.string().matches(/^[0-9]{10,11}$/, 'Invalid phone number').required('Phone number is required'),
+    address: yup.string().required('Address is required'),
 });
 
 type FormData = {
@@ -54,7 +56,10 @@ type FormData = {
     images?: File[] | null;
     gender: 'male' | 'female';
     price: number;
+    phone: string;
+    address: string;
 };
+
 
 type PlayerFormType = {
     open: boolean;
@@ -78,6 +83,8 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
     const [description, setDescription] = useState<string>('')
     const [gender, setGender] = useState<any>();
     const [price, setPrice] = useState<number>(0);
+    const [phone, setPhone] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
 
     useEffect(() => {
         setValue('images', images);
@@ -100,6 +107,14 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
     }, [price, setValue]);
 
     useEffect(() => {
+        setValue('phone', phone);
+    }, [phone, setValue]);
+
+    useEffect(() => {
+        setValue('address', address);
+    }, [address, setValue]);
+
+    useEffect(() => {
         if (open) {
             getGameList();
             if (player) {
@@ -111,6 +126,11 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
                 setValue('name', player.name)
                 setValue("email", player.email)
                 setValue('games', player.Games.map(games => games.id))
+                setValue('phone', player.phone)
+                setValue('address', player.address)
+                setPhone(player.phone)
+                setAddress(player.address)
+                console.log(player)
             }
         }
         else {
@@ -123,7 +143,13 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
         setValue("games", selectedGames)
     }, [selectedGames, setValue])
 
+    useEffect(() => {
+        setValue("phone", phone)
+    }, [phone])
 
+    useEffect(() => {
+        setValue("address", address)
+    }, [address])
 
     const getGameList = async () => {
         try {
@@ -150,6 +176,8 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
         setPlayer(null);
         setGender(null);
         setPrice(0)
+        setPhone('');
+        setAddress('');
     };
 
 
@@ -326,15 +354,40 @@ const PlayerForm: React.FC<PlayerFormType> = ({ open, setOpen, getPlayerList, pl
                         {errors.gender && <p className='text-red-600 -mt-2'>{errors.gender.message}</p>}
                     </div>
                     <div className='w-full px-2 flex flex-col gap-2'>
+                        <Label className='text-base font-semibold' required>Phone</Label>
+                        <Input
+                            className='border h-[35px] rounded outline-none p-3 w-full'
+                            type='text'
+                            {...register('phone')}
+                            disabled={player ? true : false}
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            errorMessage={errors.phone?.message}
+                        />
+                    </div>
+
+                    <div className='w-full px-2 flex flex-col gap-2'>
+                        <Label className='text-base font-semibold' required>Address</Label>
+                        <Input
+                            className='border h-[35px] rounded outline-none p-3 w-full'
+                            type='text'
+                            {...register('address')}
+                            disabled={player ? true : false}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            errorMessage={errors.address?.message}
+                        />
+                    </div>
+                    <div className='w-full px-2 flex flex-col gap-2'>
                         <div className='flex items-center'>
                             <Label className='text-base font-semibold' required>Price</Label>
-                            <p className='font-semibold pl-5'>({new Intl.NumberFormat('vi-VN').format(price)}VNĐ/h)</p>
+                            <p className='font-semibold pl-5'>({new Intl.NumberFormat('USD').format(price)}USD/h)</p>
                         </div>
                         <InputNumber
                             onChange={(value) => setPrice(value || 0)}
                             value={price}
                             type='number'
-                            addonAfter="VNĐ"
+                            addonAfter="USD"
                             disabled={player ? true : false}
                             defaultValue={0}
                         />

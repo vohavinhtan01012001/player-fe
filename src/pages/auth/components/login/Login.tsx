@@ -15,7 +15,7 @@ export type LoginForm = {
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email format").required("Email is required"),
-  password: yup.string().required("Password is required"),
+  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
 });
 
 function Login() {
@@ -55,14 +55,6 @@ function Login() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* <div className='flex items-center -mt-8 mb-11 cursor-pointer shadow overflow-hidden rounded-lg'>
-        <div onClick={() => setCheckPlayer(false)} className={`duration-300 w-[100px] ${checkPlayer ? "bg-[#9e8f8c33]" : "bg-[#ff4b2b] text-white"} py-2 `}>
-          User
-        </div>
-        <div onClick={() => setCheckPlayer(true)} className={`duration-300  w-[100px] ${checkPlayer ? "bg-[#ff4b2b] text-white" : "bg-[#bebab933] text-[#333]"}   font-semibold py-2 `}>
-          Player
-        </div>
-      </div> */}
       <Label className='text-base' required>Email</Label>
       <Input
         type='email'
@@ -75,7 +67,6 @@ function Login() {
         {...register('password')}
         errorMessage={errors.password?.message}
       />
-
       <button type='submit'>Sign In</button>
       <Link to={'/forgot-password'} className='text-sm hover:text-red-600'>Forgot Password?</Link>
     </form>

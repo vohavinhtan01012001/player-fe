@@ -1,7 +1,9 @@
-import { X } from 'lucide-react';
+import { BadgeCent, Send, X } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatService } from '../../../../services/chatService';
 import socketIOClient from 'socket.io-client';
+import { toast } from 'react-toastify';
+import RentForm from './RentForm';
 
 interface Message {
   id: number;
@@ -10,16 +12,19 @@ interface Message {
   timestamp: string;
   userId: any;
   senderType: 'user' | 'player';
+  donate: 0 | 1;
 }
 
 type ChatProps = {
   player: any;
   user: any;
   handleCloseChat: () => void;
+  showChat: boolean;
 }
-const SOCKET_SERVER_URL = "https://node-mysql-0u5t.onrender.com";
-const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
+const SOCKET_SERVER_URL = "http://localhost:5000";
+const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, showChat }) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showRentForm, setShowRentForm] = useState(false);
   const [input, setInput] = useState<string>('');
   const messageEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -39,7 +44,8 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
           content: newMessage.message,
           timestamp: new Date(newMessage.created_at).toLocaleTimeString(),
           userId: newMessage.userId,
-          senderType: newMessage.senderType
+          senderType: newMessage.senderType,
+          donate: newMessage.donate
         }
       ]);;
     });
@@ -60,14 +66,14 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
           content: msg.message,
           timestamp: new Date(msg.created_at).toLocaleTimeString(),
           userId: msg.userId,
-          senderType: msg.senderType
+          senderType: msg.senderType,
+          donate:msg.donate
         }));
         setMessages(fetchedMessages);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
-
     loadMessages();
   }, []);
 
@@ -76,17 +82,12 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
   }, [messages]);
 
   const handleSendMessage = async () => {
+    if (!showChat) {
+      toast.error("Please rent before texting");
+      setInput('');
+      return;
+    }
     if (input.trim()) {
-      // const newMessage: Message = {
-      //   id: messages.length + 1,
-      //   user: 'You',
-      //   content: input,
-      //   timestamp: new Date().toLocaleTimeString(),
-      //   userId: user.id,
-      //   senderType: 'user'
-      // };
-
-      // setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInput('');
 
       try {
@@ -133,13 +134,13 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
               }`}
           >
             <div
-              className={`inline-block px-4 py-1 rounded-lg relative  ${message.senderType === 'user'
-                ? 'bg-blue-600 text-white'
+              className={`inline-block px-4 py-1 rounded-lg relative  max-w-[85%] ${message.senderType === 'user'
+                ? message.donate === 1 ? 'bg-green-600 text-white min-w-[250px]' : 'bg-blue-600 text-white'
                 : 'bg-gray-200 text-black'
                 }`}
             >
               <div>
-                <p>{message.content}</p>
+                <p dangerouslySetInnerHTML={{ __html: message.content }}></p>
                 <p className='text-[10px]'>{message.timestamp}</p>
               </div>
             </div>
@@ -149,7 +150,10 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
       </div>
 
       {/* Input field */}
-      <div className="p-4 border-t border-gray-300">
+      <div className="p-4 border-t border-gray-300 flex items-center gap-3">
+        <button onClick={() => setShowRentForm(true)}>
+          <BadgeCent color='red' />
+        </button>
         <input
           type="text"
           value={input}
@@ -158,8 +162,17 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat }) => {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           placeholder="Type a message..."
         />
+        <button onClick={handleSendMessage}>
+          <Send color='blue' />
+        </button>
       </div>
-    </div>
+      <RentForm
+        open={showRentForm}
+        setOpen={setShowRentForm}
+        player={player}
+        form={"Donate"}
+      />
+    </div >
   );
 };
 

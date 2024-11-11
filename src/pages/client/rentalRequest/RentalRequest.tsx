@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { PlayerService } from '../../../services/playerService';
 import { Send, X } from 'lucide-react';
 import ChatWindow from './components/ChatWindow';
+import { useLocation } from 'react-router-dom';
 
 const RentalRequestList = () => {
     const [rentalRequestList, setRentalRequestList] = useState<any[]>([]);
@@ -13,38 +14,61 @@ const RentalRequestList = () => {
     const [showChat, setShowChat] = useState(false)
     const [user, setUser] = useState()
     const [rental, setRental] = useState()
-
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const userId = queryParams.get('userId');
     const getPlayer = async () => {
         try {
             const user = await UserService.getUser();
             if (user.data.data) {
                 const res = await PlayerService.getPlayers();
-                setPlayer(res.data.data.find((item: any) => user.data.data.id === item.userId))
+                setPlayer(res.data.data.find((item: any) => user.data.data.id == item.userId))
             }
         } catch (error: any) {
             console.log(error?.response?.data?.message || 'Failed to fetch user data');
         }
     };
-
     useEffect(() => {
-        getPlayer();
-    }, [showChat]);
+        if (!userId) {
+            getUserChat()
+        }
+        else {
+            getUser();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showChat, userId]);
 
 
     const getUserChat = async () => {
         try {
-            const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
-            setUser(res.data.data.find((p:any) => p.status === 1).User)
+            const user = await UserService.getUser();
+            const player = await PlayerService.getPlayers();
+            setPlayer(player.data.data.find((item: any) => user.data.data.id == item.userId))
+            const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player.data.data.find((item: any) => user.data.data.id == item.userId).id);
+            setUser(res.data.data.find((p: any) => p.status === 1).User)
             setShowChat(true);
-            setRental(res.data.data.find((p:any) => p.status === 1))
+            setRental(res.data.data.find((p: any) => p.status === 1))
         } catch (error) {
             console.log(error);
         }
     }
 
-    useEffect(() => {
-        getUserChat()
-    },[showChat])
+    const getUser = async () => {
+        try {
+            const user = await UserService.getAllUser();
+            console.log(user.data.data)
+            const userData = user.data.data.find((p: any) => p.id == userId);
+            if (userData) {
+                setUser(userData)
+                setShowChat(true);
+                await getPlayer();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
 
     useEffect(() => {
         if (player) {
@@ -76,7 +100,7 @@ const RentalRequestList = () => {
     const handleSubmit = async (id: number, user: any) => {
         try {
             const res = await RentalRequestService.getRentalRequestByIdPlayerAll(player?.id);
-            if (res.data.data.some((p:any) => p.status === 1)) {
+            if (res.data.data.some((p: any) => p.status === 1)) {
                 toast.error("You have confirmed a previous request")
                 return;
             }
@@ -94,7 +118,6 @@ const RentalRequestList = () => {
         setShowChat(false);
     }
 
-    console.log(user)
 
     return (
         <div className="min-h-screen w-[1200px] p-6 shadow-lg rounded-lg mx-auto my-4 border">
@@ -111,7 +134,7 @@ const RentalRequestList = () => {
                             </div>
                             <div className='flex gap-10 items-center justify-start w-[50%]'>
                                 <p>hours: {rentalRequest.hours}</p>
-                                <p>sumPrice: {new Intl.NumberFormat('vi-VN').format(rentalRequest.totalPrice)} VNĐ</p>
+                                <p>sumPrice: {new Intl.NumberFormat('USD').format(rentalRequest.totalPrice)} USD</p>
                             </div>
                             <div className="flex justify-center items-center gap-3">
                                 <button
