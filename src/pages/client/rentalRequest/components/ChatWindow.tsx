@@ -5,6 +5,7 @@ import socketIOClient from 'socket.io-client';
 import { RentalRequestService } from '../../../../services/rentalRequestService';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
+import dayjs from 'dayjs';
 interface Message {
   id: number;
   user: string;
@@ -112,16 +113,20 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
     }
   };
 
-
   const handleSubmit = async () => {
     try {
-      await RentalRequestService.updateRentalRequest(rental.id, { status: 2 })
-      toast.success("Rental request completed successfully")
-      handleCloseChat();
+      if (rental?.endTimeConfirm && dayjs(dayjs()).isAfter(rental.endTimeConfirm)) {
+        await RentalRequestService.updateRentalRequest(rental.id, { status: 2 });
+        toast.success("Rental request completed successfully");
+        handleCloseChat();
+      } else {
+        toast.error("End time has already passed or is invalid.");
+      }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || "An error occurred");
     }
-  }
+  };
+
 
   return (
     <div className="flex h-[500px] flex-col bg-white border border-gray-300 rounded-lg shadow-lg w-96">
@@ -131,7 +136,14 @@ const ChatWindow: React.FC<ChatProps> = ({ player, user, handleCloseChat, rental
           <h2 className="text-lg font-semibold">{user?.fullName}</h2>
           {
             !userId &&
-            <button onClick={handleSubmit} className='py-1 hover:text-red-600 duration-300'>Confirmed completion</button>
+            <button
+              onClick={handleSubmit}
+              className={`py-1 hover:text-red-600 duration-300 ${!(rental?.endTimeConfirm && dayjs(dayjs()).isAfter(rental.endTimeConfirm)) ? 'opacity-80 hover:text-white' : ""}`}
+              disabled={!(rental?.endTimeConfirm && dayjs(dayjs()).isAfter(rental.endTimeConfirm))}
+            >
+              Confirmed completion
+            </button>
+
           }
         </div>
         <div>

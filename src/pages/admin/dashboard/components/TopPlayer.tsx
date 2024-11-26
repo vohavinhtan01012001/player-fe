@@ -39,8 +39,8 @@ export default function TopPlayer() {
     }
     useEffect(() => {
         getTop5Player();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedYear,selectedMonth])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedYear, selectedMonth])
 
     const handleChangeYear = (e: any) => {
         setSelectedYear(e.target.value)

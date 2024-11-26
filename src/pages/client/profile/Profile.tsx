@@ -211,7 +211,7 @@ const Profile = () => {
                                         <Option value="3">Busy</Option>
                                     </Select>
                                 </div>
-                                <div className='col-span-3 sm:col-span-1'>
+                                <div className='col-span-3 sm:col-span-1 uppercase'>
                                     <Label className='text-base font-semibold' required>Wallet Balance</Label>
                                     <div className="flex items-center justify-between">
                                         <p>{new Intl.NumberFormat('USD').format(user?.price)} USD</p>
