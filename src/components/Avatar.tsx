@@ -21,11 +21,16 @@ const AvatarDialog = ({
         navigate('/profile');
         setShow(false);
     }
+    const handleHistory = () => {
+        navigate('/transaction-history');
+        setShow(false);
+    }
 
     return (
-        <div className="bg-white w-[100px] h-[80px] shadow-lg rounded-lg *:text-[#333] py-2 px-3">
+        <div className="bg-white w-[100px] h-[120px] shadow-lg rounded-lg *:text-[#333] py-2 px-3">
             <div className="flex flex-col gap-3 cursor-pointer font-semibold">
                 <div onClick={handleProfile}>Profile</div >
+                <div onClick={handleHistory}>History</div>
                 <div onClick={handleLogout}>Logout</div>
             </div>
         </div>

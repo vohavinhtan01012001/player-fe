@@ -14,6 +14,7 @@ import Policy from "../pages/client/policy/Policy"
 import Profile from "../pages/client/profile/Profile"
 import rentalRequestList from "../pages/client/rentalRequest/RentalRequest"
 import Thanks from "../pages/client/thanks/Thanks"
+import TransactionHistory from "../pages/client/transactionHistory/TransactionHistory"
 
 const authRouters = [
   {
@@ -62,6 +63,10 @@ const publicRoutes = [
   {
     path: '/policy',
     component:Policy 
+  },
+  {
+    path: '/transaction-history',
+    component:TransactionHistory 
   }
 ]
 
